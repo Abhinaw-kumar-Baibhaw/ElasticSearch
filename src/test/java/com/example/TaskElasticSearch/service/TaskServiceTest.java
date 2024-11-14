@@ -1,8 +1,7 @@
-package com.example.TaskElasticSearch;
+package com.example.TaskElasticSearch.service;
 
 import com.example.TaskElasticSearch.model.Task;
 import com.example.TaskElasticSearch.repo.TaskRepo;
-import com.example.TaskElasticSearch.service.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
