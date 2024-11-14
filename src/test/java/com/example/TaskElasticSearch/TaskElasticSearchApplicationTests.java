@@ -8,6 +8,7 @@ class TaskElasticSearchApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
