@@ -9,8 +9,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class TaskServiceTest {
@@ -28,10 +32,40 @@ public class TaskServiceTest {
     private WebClient webClient;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
+        WebClient.RequestBodyUriSpec requestBodyUriSpec = mock(WebClient.RequestBodyUriSpec.class);
+        WebClient.RequestBodySpec requestBodySpec = mock(WebClient.RequestBodySpec.class);
+        WebClient.RequestHeadersSpec requestHeadersSpec = mock(WebClient.RequestHeadersSpec.class);
+        WebClient.ResponseSpec responseSpec = mock(WebClient.ResponseSpec.class);
+
         when(webClientBuilder.build()).thenReturn(webClient);
+        when(webClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
+        when(requestBodySpec.bodyValue(any(Object.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(Task.class)).thenReturn(Mono.just(new Task("TestCity", "TestAddress", "TestType")));
     }
+
+    @Test
+    void testFindTasks_ThirdPartyCall1() {
+        when(taskRepo.findByCityAndAddress(anyString(), anyString())).thenReturn(Collections.emptyList());
+        List<Task> tasks = taskService.findTasks("TestCity", "TestAddress", null);
+        assertNotNull(tasks);
+        verify(taskRepo, times(1)).findByCityAndAddress("TestCity", "TestAddress");
+        verify(webClientBuilder, times(1)).build();
+    }
+
+    @Test
+    void testFindTasks_ThirdPartyCall2() {
+        when(taskRepo.findByCityAndType(anyString(), anyString())).thenReturn(Collections.emptyList());
+        List<Task> tasks = taskService.findTasks("TestCity", null, "permanent");
+        assertNotNull(tasks);
+        verify(taskRepo, times(1)).findByCityAndType("TestCity", "permanent");
+        verify(webClientBuilder, times(1)).build();
+    }
+
+
 
     @Test
     public void testFindTasks_WithCityAndAddress() {

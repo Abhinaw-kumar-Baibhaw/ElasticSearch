@@ -24,7 +24,7 @@ public class TaskService {
 
         if (city != null && address != null) {
             result = (List<Task>) taskRepo.findByCityAndAddress(city, address);
-        } else if (city != null && type != null && address != null) {
+        } else if (city != null && type != null) {
             result = taskRepo.findByCityAndType(city, type);
         } else if (city != null) {
             result = taskRepo.findAllByCity(city);
