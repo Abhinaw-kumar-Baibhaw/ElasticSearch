@@ -17,4 +17,11 @@ public enum ErrorCode {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "ErrorCode{" +
+                "message='" + message + '\'' +
+                '}';
+    }
 }

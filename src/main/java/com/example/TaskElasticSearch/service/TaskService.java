@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.HashMap;
 import java.util.List;
 
+
 @Service
 public class TaskService {
 
@@ -23,30 +24,30 @@ public class TaskService {
 
     public List<Task> findTasks(String city, String address, String type) throws ResourceNotFoundException {
         List<Task> result = null;
-
         if (city != null && address != null) {
             result = (List<Task>) taskRepo.findByCityAndAddress(city, address);
         } else if (city != null && type != null) {
             result = taskRepo.findByCityAndType(city, type);
         } else if (city != null) {
             result = taskRepo.findAllByCity(city);
-        } else {
-            result = (List<Task>) taskRepo.findAll();
+        }
+        else {
+            if(city == null){
+                throw new ResourceNotFoundException(ErrorCode.CITY_NOT_FOUND);
+            }
+            if(address == null){
+                throw new ResourceNotFoundException(ErrorCode.ADDRESS_NOT_FOUND);
+            }
+            if(type == null){
+                throw new ResourceNotFoundException(ErrorCode.TYPE_NOT_FOUND);
+            }
+//            result = (List<Task>) taskRepo.findAll();
         }
         if (result == null || result.isEmpty()) {
             HashMap<String , String > createRequestPayload = new HashMap<>();
             if(city != null) createRequestPayload.put("city",city);
-            else {
-             throw new ResourceNotFoundException(ErrorCode.CITY_NOT_FOUND);
-            }
             if(address != null) createRequestPayload.put("address",address);
-            else {
-                throw new ResourceNotFoundException(ErrorCode.ADDRESS_NOT_FOUND);
-            }
             if(type != null) createRequestPayload.put("type", type);
-            else {
-                throw new ResourceNotFoundException(ErrorCode.TYPE_NOT_FOUND);
-            }
             Task alternateDataArray = webClientBuilder.build()
                     .post()
                     .uri(url)
@@ -54,7 +55,6 @@ public class TaskService {
                     .retrieve()
                     .bodyToMono(Task.class)
                     .block();
-
             if (alternateDataArray != null ) {
                 result = List.of(alternateDataArray);
             }
@@ -64,6 +64,7 @@ public class TaskService {
         }
         return result;
     }
+
     public Task insertProduct(Task product) throws Exception{
         return taskRepo.save(product);
     }

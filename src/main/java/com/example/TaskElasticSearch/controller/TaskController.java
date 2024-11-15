@@ -1,6 +1,6 @@
 package com.example.TaskElasticSearch.controller;
 
-
+import com.example.TaskElasticSearch.enums.ErrorCode;
 import com.example.TaskElasticSearch.exceptions.ResourceNotFoundException;
 import com.example.TaskElasticSearch.model.Task;
 import com.example.TaskElasticSearch.service.TaskService;
@@ -32,8 +32,6 @@ public class TaskController {
         return ResponseEntity.ok(taskService.insertProduct(task));
     }
 
-
-//
 //    @GetMapping("/findAll")
 //    public Iterable<Task> findAll(){
 //        return  taskService.getData();

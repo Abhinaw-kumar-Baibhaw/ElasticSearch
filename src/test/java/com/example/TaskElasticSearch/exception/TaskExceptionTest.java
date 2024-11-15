@@ -1,68 +1,110 @@
 package com.example.TaskElasticSearch.exception;
 
-import com.example.TaskElasticSearch.enums.ErrorCode;
-import com.example.TaskElasticSearch.exceptions.ResourceNotFoundException;
-import com.example.TaskElasticSearch.service.TaskService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import java.util.HashMap;
-import java.util.Map;
-import static org.mockito.Mockito.when;
+import static javax.swing.UIManager.get;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+import com.example.TaskElasticSearch.enums.ErrorCode;
+import com.example.TaskElasticSearch.exceptions.ResourceNotFoundException;
+import com.example.TaskElasticSearch.model.Task;
+import com.example.TaskElasticSearch.repo.TaskRepo;
+import com.example.TaskElasticSearch.service.TaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+
+
+@ExtendWith(MockitoExtension.class)
 public class TaskExceptionTest {
+
+    @Mock
+    private TaskRepo taskRepo;
+
+    @Mock
+    private WebClient.Builder webClientBuilder;
+
+    @InjectMocks
+    private TaskService taskService;
+
+    @Mock
+    private WebClient webClient;
+
+    @Mock
+    private WebClient.RequestBodyUriSpec requestBodyUriSpec;
+
+    @Mock
+    private WebClient.RequestBodySpec requestBodySpec;
+
+
+    @Mock
+    private WebClient.ResponseSpec responseSpec;
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private TaskService taskService;
-
-
-    @Test
-    void testResourceNotFoundFallback() throws Exception {
-        when(taskService.findTasks("nonexistent city", "some address", "temporary"))
-                .thenThrow(new ResourceNotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/insert")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"city\": \"nonexistent city\", \"address\": \"some address\", \"type\": \"temporary\"}"));
-//                .andExpect(status().isNotFound());
-//                .andExpect((ResultMatcher) content().string(ErrorCode.RESOURCE_NOT_FOUND.getMessage()));
+     @Test
+    public void testMethodThrowsException() {
+        String city = "some city";
+        String address = "some address";
+        String type = "some type";
+        assertThrows(NullPointerException.class, ()->{
+             taskService.findTasks(null,null,null);
+         });
     }
 
-
     @Test
-    void testCityNotFound() throws Exception {
-        when(taskService.findTasks(null, "some address", "temporary"))
-                .thenThrow(new ResourceNotFoundException(ErrorCode.CITY_NOT_FOUND));
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/byCity")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"address\": \"some address\", \"type\": \"temporary\"}"));
-//                .andExpect(status().isNotFound())
-//                .andExpect((ResultMatcher) content().string(ErrorCode.CITY_NOT_FOUND.getMessage()));
+    public void testMethodThrowsException1() {
+        String city = "some city";
+        String address = "some address";
+        String type = "some type";
+        assertThrows(NullPointerException.class, ()->{
+            taskService.findTasks(null,address,type);
+        });
     }
 
+    @Test
+    public void testMethodThrowsException2() {
+        String city = "some city";
+        String address = "some address";
+        String type = "some type";
+        assertThrows(NullPointerException.class, ()->{
+            taskService.findTasks(null,null,type);
+        });
+    }
 
     @Test
-    void testHandleGlobalException() throws Exception {
-        Map<String, String> requestData = new HashMap<>();
-        requestData.put("city", "New York");
-        requestData.put("address", "delhi");
-        requestData.put("type", "permanent");
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/apis/byCity")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestData)))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(0));
+    public void testMethodThrowsResourceNotFoundException() {
+        String city = null;
+        String address = "some address";
+        String type = "some type";
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            taskService.findTasks(city, address, type);
+        });
+    }
+
+    @Test
+    public void testControllerThrowsResourceNotFoundException() throws Exception {
+        mockMvc.perform(post("/apis/byCity"))
+                .andExpect(status().isNotFound())
+                .andExpect((ResultMatcher) content().string(ErrorCode.RESOURCE_NOT_FOUND.toString()));
     }
 
 }

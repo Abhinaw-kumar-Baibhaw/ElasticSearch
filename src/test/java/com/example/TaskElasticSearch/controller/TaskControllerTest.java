@@ -13,22 +13,22 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(TaskController.class)  // WebMvcTest for Controller layer
+@WebMvcTest(TaskController.class)
 class TaskControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;  // Inject MockMvc for performing HTTP requests
+    private MockMvc mockMvc;
 
     @MockBean
-    private TaskService taskService;  // Mock the service bean to inject into the controller
+    private TaskService taskService;
 
     private Task mockTask;
 
     @BeforeEach
     void setUp() {
-        // Mock task for insertion tests
         mockTask = new Task("TestCity", "TestAddress", "TestType");
     }
+
 
     @Test
     void testFindByCity() throws Exception {
