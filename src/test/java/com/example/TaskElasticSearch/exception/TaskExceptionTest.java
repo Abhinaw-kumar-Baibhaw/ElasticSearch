@@ -30,6 +30,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -47,8 +48,6 @@ public class TaskExceptionTest {
     @Mock
     private WebClient webClient;
 
-    @Mock
-    private WebClient.RequestBodyUriSpec requestBodyUriSpec;
 
     @Mock
     private WebClient.RequestBodySpec requestBodySpec;
@@ -60,51 +59,30 @@ public class TaskExceptionTest {
     @Autowired
     private MockMvc mockMvc;
 
-     @Test
-    public void testMethodThrowsException() {
-        String city = "some city";
-        String address = "some address";
-        String type = "some type";
-        assertThrows(NullPointerException.class, ()->{
-             taskService.findTasks(null,null,null);
-         });
-    }
 
     @Test
-    public void testMethodThrowsException1() {
-        String city = "some city";
+    public void testMethodThrowsNullPointerException() {
+        String city = "somecity";
         String address = "some address";
         String type = "some type";
-        assertThrows(NullPointerException.class, ()->{
-            taskService.findTasks(null,address,type);
-        });
-    }
-
-    @Test
-    public void testMethodThrowsException2() {
-        String city = "some city";
-        String address = "some address";
-        String type = "some type";
-        assertThrows(NullPointerException.class, ()->{
-            taskService.findTasks(null,null,type);
-        });
-    }
-
-    @Test
-    public void testMethodThrowsResourceNotFoundException() {
-        String city = null;
-        String address = "some address";
-        String type = "some type";
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+       assertThrows(NullPointerException.class, () -> {
             taskService.findTasks(city, address, type);
         });
     }
-
     @Test
-    public void testControllerThrowsResourceNotFoundException() throws Exception {
-        mockMvc.perform(post("/apis/byCity"))
-                .andExpect(status().isNotFound())
-                .andExpect((ResultMatcher) content().string(ErrorCode.RESOURCE_NOT_FOUND.toString()));
+    public void testMethodThrowsNullPointerException2() {
+        String city = "somecity";
+        String address = "some address";
+        assertThrows(NullPointerException.class, () -> {
+            taskService.findTasks(city, address, null);
+        });
     }
 
+    @Test
+    public void testMethodThrowsNullPointerException3() {
+        String city = "somecity";
+        assertThrows(NullPointerException.class, () -> {
+            taskService.findTasks(city, null, null);
+        });
+    }
 }

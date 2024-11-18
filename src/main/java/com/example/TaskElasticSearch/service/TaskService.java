@@ -1,6 +1,7 @@
 package com.example.TaskElasticSearch.service;
 
 import com.example.TaskElasticSearch.enums.ErrorCode;
+import com.example.TaskElasticSearch.exceptions.NullPointerException;
 import com.example.TaskElasticSearch.exceptions.ResourceNotFoundException;
 import com.example.TaskElasticSearch.model.Task;
 import com.example.TaskElasticSearch.repo.TaskRepo;
@@ -33,13 +34,13 @@ public class TaskService {
         }
         else {
             if(city == null){
-                throw new ResourceNotFoundException(ErrorCode.CITY_NOT_FOUND);
+                throw new NullPointerException(ErrorCode.CITY_NOT_FOUND);
             }
             if(address == null){
-                throw new ResourceNotFoundException(ErrorCode.ADDRESS_NOT_FOUND);
+                throw new NullPointerException(ErrorCode.ADDRESS_NOT_FOUND);
             }
             if(type == null){
-                throw new ResourceNotFoundException(ErrorCode.TYPE_NOT_FOUND);
+                throw new NullPointerException(ErrorCode.TYPE_NOT_FOUND);
             }
 //            result = (List<Task>) taskRepo.findAll();
         }
@@ -65,8 +66,8 @@ public class TaskService {
         return result;
     }
 
-    public Task insertProduct(Task product) throws Exception{
-        return taskRepo.save(product);
-    }
+//    public Task insertProduct(Task product) throws Exception{
+//        return taskRepo.save(product);
+//    }
 
 }

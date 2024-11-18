@@ -27,10 +27,10 @@ public class TaskController {
         return result;
     }
 
-    @PostMapping("/insert")
-    public ResponseEntity<Task> insertProduct(@RequestBody Task task) throws Exception {
-        return ResponseEntity.ok(taskService.insertProduct(task));
-    }
+//    @PostMapping("/insert")
+//    public ResponseEntity<Task> insertProduct(@RequestBody Task task) throws Exception {
+//        return ResponseEntity.ok(taskService.insertProduct(task));
+//    }
 
 //    @GetMapping("/findAll")
 //    public Iterable<Task> findAll(){

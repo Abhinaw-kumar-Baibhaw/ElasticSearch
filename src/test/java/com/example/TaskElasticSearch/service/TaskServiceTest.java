@@ -120,4 +120,5 @@ public class TaskServiceTest {
         assertEquals(task, result.get(0));
         verify(taskRepo, times(1)).findAllByCity(city);
     }
+
 }
